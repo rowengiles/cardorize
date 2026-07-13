@@ -29,16 +29,15 @@
 - Scripted API test (scratchpad totp-e2e.mjs): register, TOTP setup, enable with real RFC-6238 code, login blocked without code, uniform 401 on bad password, login with code, session valid — 7/7 PASS.
 - NOT yet verified (needs a real Anthropic key): live card generation from URL/upload, AI grading quality, Explain This output. Code paths typecheck and fail gracefully without keys.
 
-**Repo status**: initial commit `e7ece3a` on `main`. gh CLI 2.96 installed but unauthenticated.
-**To publish (user action, from the `cardorize` directory)**:
-```
-gh auth login
-gh repo create cardorize --public --source . --push
-```
+**Repo status**: PUBLISHED — https://github.com/rowengiles/cardorize (user created the repo and authenticated gh as `rowengiles`; all commits pushed, `main` tracks `origin/main`).
+
+**Post-review changes (2026-07-13)**:
+- Mode 2 renamed to **"Leitner Mode"** (user's choice; internal key stays `ladder`).
+- Audio/mp4 uploads now prompt for the Whisper (OpenAI) key **at upload time**: inline alert + key entry on the Create page, and the upload endpoint rejects up front with 402 ("This is an audio/video upload. Please enter your Whisper (OpenAI) API key to allow transcribing.") — verified by scripted test (PASS).
 
 **Next session (Phase 2 candidates)**:
-1. Confirm publish succeeded; add repo description + topics on GitHub.
-2. User decisions pending: premium gating boundaries per feature; email provider for verification/reset. (Mode 2 name resolved: "Leitner Mode".)
+1. Add repo description + topics on GitHub; consider enabling branch protection.
+2. User decisions pending: premium gating boundaries per feature; email provider for verification/reset.
 3. Interactive card formats; playlist expansion prompt; friend system; streaks/badges engine; verify live AI generation once the user adds their Anthropic key.
 
 ---

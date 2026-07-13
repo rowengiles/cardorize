@@ -20,6 +20,7 @@ import {
 } from "@cardorize/shared";
 import { apiGet, apiSend } from "../api";
 import { ExplainButton, FlipCard } from "../components/Flashcard";
+import { Markdown } from "../components/Markdown";
 import { useAuth } from "../state";
 
 /** Server blob per (deck, mode): one state per scope ("all" or a subsetId). */
@@ -421,7 +422,7 @@ function AiStudy({
             style={{ borderColor: result.correct ? "var(--ok)" : "var(--danger)" }}
           >
             <b>{result.correct ? "✓ Correct!" : "✗ Not quite."}</b>
-            <p>{result.feedback}</p>
+            <Markdown text={result.feedback} />
             <p className="muted small">Card back: {result.back}</p>
           </div>
           {!done ? (

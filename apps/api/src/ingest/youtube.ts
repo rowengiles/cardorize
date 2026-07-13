@@ -44,7 +44,17 @@ export async function fetchYouTubeTranscript(
   const tracks: CaptionTrack[] =
     playerJson?.captions?.playerCaptionsTracklistRenderer?.captionTracks ?? [];
   if (!tracks.length) {
-    throw new Error("This video has no captions/transcript available, so there is nothing to read yet.");
+    // Distinguish a YouTube bot/login wall from a genuinely caption-less video —
+    // the fix differs, and blaming "no transcript" when YouTube blocked us is wrong.
+    const status: string | undefined = playerJson?.playabilityStatus?.status;
+    if (status && status !== "OK") {
+      throw new Error(
+        `YouTube blocked this transcript request (status: ${status}). YouTube rate-limits automated fetches — this does not necessarily mean the video lacks a transcript. Workaround: download the video and upload it as an .mp3/.mp4; with your Whisper (OpenAI) key it will be transcribed directly.`,
+      );
+    }
+    throw new Error(
+      "This video exposes no captions to read. If it has spoken audio, download it and upload the .mp3/.mp4 — with your Whisper (OpenAI) key it will be transcribed directly.",
+    );
   }
   // Prefer manual English, then any manual, then auto-generated.
   const track =

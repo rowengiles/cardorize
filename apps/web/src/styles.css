@@ -217,8 +217,42 @@ main.page { padding: 28px 0 80px; }
 .table th, .table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 .explain-panel {
   background: var(--bg-raised); border: 1px solid var(--accent);
-  border-radius: 12px; padding: 18px; margin-top: 16px; white-space: pre-wrap; font-size: 0.95rem;
+  border-radius: 12px; padding: 18px; margin-top: 16px; font-size: 0.95rem;
 }
+
+/* ---------- Markdown rendering (Explain this, feedback) ---------- */
+.markdown > *:first-child { margin-top: 0; }
+.markdown > *:last-child { margin-bottom: 0; }
+.markdown p { margin: 0.55rem 0; }
+.markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
+  margin: 1rem 0 0.4rem; line-height: 1.25;
+}
+.markdown h2 { font-size: 1.2rem; }
+.markdown h3 { font-size: 1.08rem; }
+.markdown h4, .markdown h5, .markdown h6 { font-size: 1rem; }
+.markdown ul, .markdown ol { margin: 0.55rem 0; padding-left: 1.4rem; }
+.markdown li { margin: 0.25rem 0; }
+.markdown li > ul, .markdown li > ol { margin: 0.2rem 0; }
+.markdown code { background: var(--bg-soft); padding: 0.1em 0.35em; border-radius: 6px; font-size: 0.9em; }
+.markdown pre {
+  background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px; overflow-x: auto; white-space: pre; margin: 0.6rem 0;
+}
+.markdown pre code { background: none; padding: 0; }
+.markdown blockquote {
+  border-left: 3px solid var(--accent); margin: 0.6rem 0;
+  padding: 0.1rem 0 0.1rem 0.8rem; color: var(--text-dim);
+}
+.markdown a { text-decoration: underline; }
+.markdown strong { color: var(--text); font-weight: 700; }
+.markdown hr { border: none; border-top: 1px solid var(--border); margin: 0.8rem 0; }
+
+.stream-caret {
+  display: inline-block; width: 8px; height: 1.05em; vertical-align: text-bottom;
+  margin-left: 2px; background: var(--accent); border-radius: 1px;
+  animation: blink 1s steps(2, start) infinite;
+}
+@keyframes blink { to { opacity: 0; } }
 .spinner {
   width: 18px; height: 18px; border-radius: 50%;
   border: 3px solid var(--border); border-top-color: var(--accent);

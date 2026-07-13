@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Card } from "@cardorize/shared";
-import { apiSend } from "../api";
+import { Markdown } from "./Markdown";
 
 export function FlipCard({
   card,
@@ -57,12 +57,12 @@ export function FlipCard({
 export function ExplainButton({ card }: { card: Card }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [text, setText] = useState<string | null>(null);
+  const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setOpen(false);
-    setText(null);
+    setText("");
     setError(null);
   }, [card.id]);
 
@@ -71,15 +71,42 @@ export function ExplainButton({ card }: { card: Card }) {
     if (text || loading) return;
     setLoading(true);
     setError(null);
+    setText("");
     try {
-      const res = await apiSend<{ explanation: string }>("POST", "/api/explain", { cardId: card.id });
-      setText(res.explanation);
+      const res = await fetch("/api/explain", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ cardId: card.id }),
+      });
+      if (!res.ok || !res.body) {
+        let msg = `Request failed (${res.status})`;
+        try {
+          const j = (await res.json()) as { error?: string };
+          if (j.error) msg = j.error;
+        } catch {
+          /* non-JSON error body */
+        }
+        throw new Error(msg);
+      }
+      // Stream tokens in as they arrive so the panel fills immediately.
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setText(acc);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load explanation");
     } finally {
       setLoading(false);
     }
   };
+
+  const streaming = loading && text.length > 0;
 
   return (
     <div style={{ maxWidth: 640, margin: "0 auto" }}>
@@ -90,13 +117,14 @@ export function ExplainButton({ card }: { card: Card }) {
       </div>
       {open && (
         <div className="explain-panel">
-          {loading && (
+          {loading && text.length === 0 && (
             <span>
               <span className="spinner" /> Thinking…
             </span>
           )}
           {error && <span className="error-text">{error}</span>}
-          {text}
+          {text && <Markdown text={text} />}
+          {streaming && <span className="stream-caret" aria-hidden="true" />}
         </div>
       )}
     </div>

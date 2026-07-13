@@ -10,7 +10,7 @@ import { db, nowIso } from "../db.js";
 import { newId } from "../crypto.js";
 import { requireAuth } from "../auth.js";
 import { rateLimit } from "../ratelimit.js";
-import { AiError, explainCard } from "../ai/anthropic.js";
+import { AiError, explainCardStream, getProviderKey } from "../ai/anthropic.js";
 
 export function deckDto(row: any) {
   return {
@@ -217,7 +217,7 @@ export function registerDeckRoutes(app: FastifyInstance) {
     return { ok: true };
   });
 
-  // --- "Explain this" deep dive ---
+  // --- "Explain this" deep dive (streamed as plain text) ---
 
   app.post("/api/explain", { preHandler: [requireAuth, aiLimiter] }, async (req, reply) => {
     const body = explainSchema.parse(req.body);
@@ -225,17 +225,37 @@ export function registerDeckRoutes(app: FastifyInstance) {
     if (!card) return reply.code(404).send({ error: "Card not found" });
     const deck = loadDeck(card.deck_id);
     if (!deck || !canViewDeck(deck, req.userId)) return reply.code(404).send({ error: "Card not found" });
+    // Validate the key up front so a missing/invalid key is a clean JSON error
+    // rather than a half-streamed body.
+    if (!getProviderKey(req.userId!, "anthropic")) {
+      return reply
+        .code(402)
+        .send({ error: "No Anthropic API key configured. Add one under Settings → AI Providers." });
+    }
+
+    // Take over the raw socket to stream tokens as they arrive.
+    reply.hijack();
+    reply.raw.writeHead(200, {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "no-store",
+      "x-content-type-options": "nosniff",
+      "x-accel-buffering": "no", // disable proxy buffering (NGINX) so chunks flush
+    });
     try {
-      const explanation = await explainCard({
+      for await (const chunk of explainCardStream({
         userId: req.userId!,
         front: card.front,
         back: card.back,
         question: body.question,
-      });
-      return { explanation };
+      })) {
+        reply.raw.write(chunk);
+      }
     } catch (err) {
-      if (err instanceof AiError) return reply.code(err.statusCode).send({ error: err.message });
-      throw err;
+      // Headers are already sent; surface the error inline so the client shows it.
+      const msg = err instanceof AiError ? err.message : "The explanation failed. Please retry.";
+      reply.raw.write(`\n\n_[${msg}]_`);
+    } finally {
+      reply.raw.end();
     }
   });
 }

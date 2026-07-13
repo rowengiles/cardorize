@@ -231,34 +231,42 @@ export async function gradeAnswer(args: {
 
 // ---------- "Explain this" ----------
 
-export async function explainCard(args: {
+function explainMessages(args: { front: string; back: string; question?: string }): Anthropic.MessageParam[] {
+  return [
+    {
+      role: "user",
+      content: `Flashcard front: ${args.front}\nFlashcard back: ${args.back}\n\n${
+        args.question ? `The learner asks: ${args.question}` : "Explain this card's subject matter in depth."
+      }`,
+    },
+  ];
+}
+
+/**
+ * Stream an explanation as it generates. Yields text chunks so the client can
+ * render progressively — this is what keeps "Explain this" from feeling like a
+ * 10-second stall on a thinking-capable model. `getClient` throws before the
+ * first chunk, so a missing key is still a clean pre-stream error.
+ */
+export async function* explainCardStream(args: {
   userId: string;
   front: string;
   back: string;
   question?: string;
-}): Promise<string> {
+}): AsyncGenerator<string> {
   const client = getClient(args.userId);
+  const stream = client.messages.stream({
+    model: userModel(args.userId),
+    max_tokens: 2048,
+    system: explainSystemPrompt(),
+    messages: explainMessages(args),
+  });
   try {
-    const stream = client.messages.stream({
-      model: userModel(args.userId),
-      max_tokens: 2048,
-      system: explainSystemPrompt(),
-      messages: [
-        {
-          role: "user",
-          content: `Flashcard front: ${args.front}\nFlashcard back: ${args.back}\n\n${
-            args.question ? `The learner asks: ${args.question}` : "Explain this card's subject matter in depth."
-          }`,
-        },
-      ],
-    });
-    const message = await stream.finalMessage();
-    const text = message.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("\n");
-    if (!text) throw new AiError("No explanation was produced. Please retry.", 502);
-    return text;
+    for await (const event of stream) {
+      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+        yield event.delta.text;
+      }
+    }
   } catch (err) {
     friendlyApiError(err);
   }

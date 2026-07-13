@@ -34,6 +34,9 @@
 **Post-review changes (2026-07-13)**:
 - Mode 2 renamed to **"Leitner Mode"** (user's choice; internal key stays `ladder`).
 - Audio/mp4 uploads now prompt for the Whisper (OpenAI) key **at upload time**: inline alert + key entry on the Create page, and the upload endpoint rejects up front with 402 ("This is an audio/video upload. Please enter your Whisper (OpenAI) API key to allow transcribing.") — verified by scripted test (PASS).
+- **"Explain this" now streams** (commit fad789a): endpoint hijacks the socket and writes text/plain deltas (`x-accel-buffering:no` for NGINX), key validated up front → clean 402 if missing. Fixes the ~10s perceived stall (Opus 4.8 + adaptive thinking is genuinely slow; streaming shows tokens in ~1-2s). Same treatment worth considering for card generation if users complain about that wait too.
+- **Markdown rendering**: added `apps/web/src/components/Markdown.tsx` — dependency-free, XSS-safe (React nodes, no dangerouslySetInnerHTML). Handles headings/bold/italic/code/fences/lists/quotes/links/rules. Used by Explain this + AI Mode feedback. Raw `##`/`**` no longer leak into the UI.
+- **YouTube transcript reality (important)**: ingestion reads existing caption tracks from the watch-page `ytInitialPlayerResponse`. Diagnosed the user's test video (JHAMj2vN2oU): YouTube returned `playabilityStatus: LOGIN_REQUIRED "Sign in to confirm you're not a bot"` and 0 caption tracks — i.e. an anti-bot wall, NOT a missing transcript. Anonymous transcript scraping is increasingly blocked. Error message now distinguishes bot-block from caption-less and points to the audio-upload workaround. **Real fix for "watch any video" = pull audio → Whisper** (needs a yt-dlp-style extractor; Phase 2; ToS considerations). Today's workaround: user downloads the video and uploads the .mp3/.mp4 with their Whisper key.
 
 **Next session (Phase 2 candidates)**:
 1. Add repo description + topics on GitHub; consider enabling branch protection.

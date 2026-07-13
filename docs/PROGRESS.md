@@ -29,9 +29,16 @@
 - Scripted API test (scratchpad totp-e2e.mjs): register, TOTP setup, enable with real RFC-6238 code, login blocked without code, uniform 401 on bad password, login with code, session valid — 7/7 PASS.
 - NOT yet verified (needs a real Anthropic key): live card generation from URL/upload, AI grading quality, Explain This output. Code paths typecheck and fail gracefully without keys.
 
+**Repo status**: initial commit `e7ece3a` on `main`. gh CLI 2.96 installed but unauthenticated.
+**To publish (user action, from the `cardorize` directory)**:
+```
+gh auth login
+gh repo create cardorize --public --source . --push
+```
+
 **Next session (Phase 2 candidates)**:
-1. Publish GitHub repo `cardorize` (public) — needs `gh auth login` from user, then: `gh repo create cardorize --public --source cardorize --push`.
-2. User decisions pending: Mode 2 name; premium gating boundaries per feature; email provider for verification/reset.
-3. Interactive card formats; playlist expansion prompt; friend system; streaks/badges engine.
+1. Confirm publish succeeded; add repo description + topics on GitHub.
+2. User decisions pending: Mode 2 name (currently "Ladder Mode"); premium gating boundaries per feature; email provider for verification/reset.
+3. Interactive card formats; playlist expansion prompt; friend system; streaks/badges engine; verify live AI generation once the user adds their Anthropic key.
 
 ---

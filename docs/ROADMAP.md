@@ -7,7 +7,7 @@
 - [x] Decks/cards/subsets CRUD, public deck browsing + cloning
 - [x] Ingestion: YouTube transcript, article URL, PDF/DOCX/TXT/MD upload, images (vision), pasted text; audio via Whisper (BYO OpenAI key)
 - [x] AI generation with difficulty levels, card count, subsets (structured output)
-- [x] Study modes: Memory, Ladder (Leitner), AI Mode with leniency; shuffle; server-persisted progress
+- [x] Study modes: Memory, Leitner (5-stage), AI Mode with leniency; shuffle; server-persisted progress
 - [x] "Explain this" deep dives
 - [x] Settings: BYOK keys (encrypted), difficulty default, privacy, appearance, AI strictness
 - [x] Social MVP: share deck/progress/achievement posts, feed, answer-a-card in feed, reposts

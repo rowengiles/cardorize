@@ -19,7 +19,7 @@ export type AiProvider = (typeof AI_PROVIDERS)[number];
 
 export const MODE_LABELS: Record<StudyMode, string> = {
   memory: "Memory Mode",
-  ladder: "Ladder Mode",
+  ladder: "Leitner Mode",
   ai: "AI Mode",
 };
 

@@ -11,7 +11,7 @@
 
 **Decisions made** (user delegated stack/naming choices):
 - TypeScript monorepo (npm workspaces): `apps/api` Fastify + `node:sqlite`, `apps/web` Vite+React SPA, `packages/shared` zod schemas, Expo RN planned for mobile.
-- Mode 2 named **"Ladder Mode"** (Leitner system) — pending user confirmation; alternatives offered: Stages, Mastery Ladder, Leitner Mode.
+- Mode 2 named **"Leitner Mode"** — user confirmed this name end of session (internal mode key stays `ladder`).
 - Default model `claude-opus-4-8` via official `@anthropic-ai/sdk`; structured outputs for card JSON; streaming for generation.
 - Hand-rolled: TOTP, scrypt hashing, AES-256-GCM key encryption, rate limiting, dotenv (dependency minimization per spec).
 - Uploads: temp file → parse → delete; only cards persist.
@@ -38,7 +38,7 @@ gh repo create cardorize --public --source . --push
 
 **Next session (Phase 2 candidates)**:
 1. Confirm publish succeeded; add repo description + topics on GitHub.
-2. User decisions pending: Mode 2 name (currently "Ladder Mode"); premium gating boundaries per feature; email provider for verification/reset.
+2. User decisions pending: premium gating boundaries per feature; email provider for verification/reset. (Mode 2 name resolved: "Leitner Mode".)
 3. Interactive card formats; playlist expansion prompt; friend system; streaks/badges engine; verify live AI generation once the user adds their Anthropic key.
 
 ---

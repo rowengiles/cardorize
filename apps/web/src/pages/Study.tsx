@@ -434,7 +434,7 @@ function AiStudy({
               <h3>
                 Session complete — {correctCount} / {state.order.length} correct
               </h3>
-              <p className="muted small">Restart to run it again, or push weak cards through Ladder Mode.</p>
+              <p className="muted small">Restart to run it again, or push weak cards through Leitner Mode.</p>
             </div>
           )}
         </div>

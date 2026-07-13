@@ -59,7 +59,7 @@ export default function Landing() {
           <h2>Three ways to master a set</h2>
           <div className="mode-chips">
             <span className="badge accent">Memory Mode — sequential recall</span>
-            <span className="badge accent">Ladder Mode — 5-stage Leitner system</span>
+            <span className="badge accent">Leitner Mode — 5-stage spaced repetition</span>
             <span className="badge accent">AI Mode — the AI grades your answers</span>
           </div>
           <p className="muted" style={{ marginTop: 14 }}>

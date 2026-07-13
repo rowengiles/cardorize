@@ -17,7 +17,7 @@ Cardorize turns anything you're learning from — YouTube videos, articles, whit
 | Mode | Description |
 |---|---|
 | **Memory Mode** | Strict sequential review — flip cards front/back, progress auto-saves. |
-| **Ladder Mode** | Leitner-system stage progression: clear all cards in stage 1 → they advance together to stage 2 → … → stage 5. Miss a card and it drops back to stage 1. Complete stage 5 to master the set. |
+| **Leitner Mode** | Leitner-system stage progression: clear all cards in stage 1 → they advance together to stage 2 → … → stage 5. Miss a card and it drops back to stage 1. Complete stage 5 to master the set. |
 | **AI Mode** | No flipping — you type your answer and the AI grades it, with configurable leniency (from generous to exacting). |
 
 All modes support card shuffling (interleaved practice) and server-side progress persistence — pick up exactly where you left off, on any device.

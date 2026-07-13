@@ -91,7 +91,7 @@ export function registerSocialRoutes(app: FastifyInstance) {
         // Server-verified: the ladder must actually be completed.
         const state = getLadderState(req.userId!, deck.id);
         if (!state?.completed) {
-          return reply.code(400).send({ error: "Finish all 5 Ladder Mode stages first — then post it!" });
+          return reply.code(400).send({ error: "Finish all 5 Leitner Mode stages first — then post it!" });
         }
         detail = `mastered all 5 stages of "${deck.title}" 🏆`;
       }

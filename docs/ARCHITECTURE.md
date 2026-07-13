@@ -53,7 +53,7 @@ Browser SPA / Mobile app
 ## Study mode semantics
 
 - **Memory Mode** (`memory`): strict sequential; state = `{order, index}`. Flip = self-graded exposure (the *testing effect* still applies via active recall on the front side).
-- **Ladder Mode** (`ladder`): Leitner system. Every card has stage 1–5. A round tests all cards of the lowest incomplete stage; cards answered correctly are queued to advance *together* at round end; any miss sends that card to stage 1. Set is complete when every card has cleared stage 5. This implements graduated-interval retrieval practice.
+- **Leitner Mode** (`ladder` internally): Leitner system. Every card has stage 1–5. A round tests all cards of the lowest incomplete stage; cards answered correctly are queued to advance *together* at round end; any miss sends that card to stage 1. Set is complete when every card has cleared stage 5. This implements graduated-interval retrieval practice.
 - **AI Mode** (`ai`): no flipping; the user's typed answer is graded by the model with strictness 1 (lenient — gist suffices) to 5 (aggressive — precise terminology required).
 
 All modes support shuffling (interleaving) and resume-from-anywhere via persisted state.

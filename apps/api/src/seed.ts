@@ -16,8 +16,8 @@ const STARTER_CARDS: [front: string, back: string, hint: string | null][] = [
   ],
   [
     "What is the Leitner system?",
-    "A spaced-repetition scheme using staged boxes: cards you answer correctly advance to the next stage; cards you miss return to stage 1. Cardorize's Ladder Mode implements it with 5 stages.",
-    "Ladder Mode is named after it.",
+    "A spaced-repetition scheme using staged boxes: cards you answer correctly advance to the next stage; cards you miss return to stage 1. Cardorize's Leitner Mode implements it with 5 stages.",
+    "Cardorize's Leitner Mode is named after it.",
   ],
   [
     "What is interleaved practice?",
@@ -30,7 +30,7 @@ const STARTER_CARDS: [front: string, back: string, hint: string | null][] = [
     "Ebbinghaus, 1885.",
   ],
   [
-    "In Ladder Mode, what happens when you answer a card incorrectly?",
+    "In Leitner Mode, what happens when you answer a card incorrectly?",
     "That card drops back to stage 1. When the current stage's round finishes, you return to stage 1 to work the missed cards forward again.",
     null,
   ],

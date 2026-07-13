@@ -1,0 +1,20 @@
+{
+  "name": "cardorize",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Any source. Instant flashcards. Lasting knowledge.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @cardorize/api",
+    "dev:web": "npm run dev -w @cardorize/web",
+    "build": "npm run build -w @cardorize/api && npm run build -w @cardorize/web",
+    "typecheck": "npm run typecheck -w @cardorize/api && npm run typecheck -w @cardorize/web"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "esbuild@0.25.12": true
+  }
+}

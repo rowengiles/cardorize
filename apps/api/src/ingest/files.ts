@@ -17,7 +17,7 @@ const IMAGE_TYPES: Record<string, ImageInput["media_type"]> = {
   ".gif": "image/gif",
 };
 
-const AUDIO_EXTS = new Set([".mp3", ".mp4", ".m4a", ".wav", ".webm", ".mpga", ".mpeg", ".ogg", ".flac"]);
+export const AUDIO_EXTS = new Set([".mp3", ".mp4", ".m4a", ".wav", ".webm", ".mpga", ".mpeg", ".ogg", ".flac"]);
 const TEXT_EXTS = new Set([".txt", ".md", ".markdown", ".csv", ".json", ".srt", ".vtt", ".rst", ".org", ".log"]);
 
 export const ALLOWED_UPLOAD_EXTS = new Set([

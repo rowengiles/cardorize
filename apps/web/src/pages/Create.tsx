@@ -6,8 +6,16 @@ import { useAuth } from "../state";
 
 type SourceKind = "url" | "upload" | "text";
 
+const AUDIO_EXTS = new Set([".mp3", ".mp4", ".m4a", ".wav", ".webm", ".mpga", ".mpeg", ".ogg", ".flac"]);
+
+function isAudioFile(f: File | null): boolean {
+  if (!f) return false;
+  const dot = f.name.lastIndexOf(".");
+  return dot >= 0 && AUDIO_EXTS.has(f.name.slice(dot).toLowerCase());
+}
+
 export default function Create() {
-  const { settings } = useAuth();
+  const { settings, refreshSettings } = useAuth();
   const navigate = useNavigate();
   const [kind, setKind] = useState<SourceKind>("url");
   const [url, setUrl] = useState("");
@@ -20,7 +28,28 @@ export default function Create() {
   const [isPublic, setIsPublic] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [job, setJob] = useState<Job | null>(null);
+  const [whisperKey, setWhisperKey] = useState("");
+  const [savingKey, setSavingKey] = useState(false);
+  const [keyError, setKeyError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval>>();
+
+  const hasWhisperKey = settings?.providers.includes("openai") ?? false;
+  const needsWhisperKey = kind === "upload" && isAudioFile(file) && !hasWhisperKey;
+
+  const saveWhisperKey = async () => {
+    if (!whisperKey.trim()) return;
+    setSavingKey(true);
+    setKeyError(null);
+    try {
+      await apiSend("PUT", "/api/settings/keys", { provider: "openai", key: whisperKey.trim() });
+      setWhisperKey("");
+      await refreshSettings();
+    } catch (e) {
+      setKeyError(e instanceof Error ? e.message : "Failed to save key");
+    } finally {
+      setSavingKey(false);
+    }
+  };
 
   useEffect(() => () => clearInterval(pollRef.current), []);
 
@@ -122,6 +151,37 @@ export default function Create() {
             <p className="muted small">
               Files are read, converted to flashcards, then deleted — Cardorize never stores your uploads.
             </p>
+            {needsWhisperKey && (
+              <div className="panel" style={{ borderColor: "var(--warn)", marginTop: 10 }}>
+                <b>⚠ Alert: This is an audio/mp4 upload.</b>
+                <p className="muted small">
+                  Please enter your Whisper (OpenAI) API key to allow transcribing. It's stored
+                  encrypted server-side and never sent back to your browser.
+                </p>
+                <div className="row">
+                  <input
+                    type="password"
+                    value={whisperKey}
+                    onChange={(e) => setWhisperKey(e.target.value)}
+                    placeholder="sk-…"
+                    autoComplete="off"
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    className="btn small-btn"
+                    onClick={saveWhisperKey}
+                    disabled={savingKey || !whisperKey.trim()}
+                  >
+                    {savingKey ? <span className="spinner" /> : "Save key"}
+                  </button>
+                </div>
+                {keyError && <p className="error-text">{keyError}</p>}
+              </div>
+            )}
+            {kind === "upload" && isAudioFile(file) && hasWhisperKey && (
+              <p className="ok-text small">✓ Whisper key on file — this upload will be transcribed.</p>
+            )}
           </div>
         )}
         {kind === "text" && (
@@ -186,7 +246,12 @@ export default function Create() {
             <span className="spinner" /> {job?.step ?? "Working"}… this can take a minute for large sources.
           </p>
         )}
-        <button className="btn big" disabled={busy} style={{ marginTop: 6 }}>
+        <button
+          className="btn big"
+          disabled={busy || needsWhisperKey}
+          style={{ marginTop: 6 }}
+          title={needsWhisperKey ? "Enter your Whisper API key above first" : ""}
+        >
           Generate flashcards
         </button>
       </form>

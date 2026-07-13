@@ -10,8 +10,8 @@ import { newId } from "../crypto.js";
 import { requireAuth } from "../auth.js";
 import { rateLimit } from "../ratelimit.js";
 import { enqueueJob, type JobPayload } from "../ingest/pipeline.js";
-import { ALLOWED_UPLOAD_EXTS } from "../ingest/files.js";
-import { AiError } from "../ai/anthropic.js";
+import { ALLOWED_UPLOAD_EXTS, AUDIO_EXTS } from "../ingest/files.js";
+import { AiError, getProviderKey } from "../ai/anthropic.js";
 
 function resolveDifficulty(userId: string, requested?: Difficulty): Difficulty {
   if (requested) return requested;
@@ -69,6 +69,15 @@ export function registerSourceRoutes(app: FastifyInstance) {
     const ext = path.extname(file.filename || "").toLowerCase();
     if (!ALLOWED_UPLOAD_EXTS.has(ext)) {
       return reply.code(400).send({ error: `Unsupported file type "${ext || "unknown"}"` });
+    }
+
+    // Audio/video needs the user's own Whisper (OpenAI) key — reject up front
+    // rather than failing mid-job after the upload.
+    if (AUDIO_EXTS.has(ext) && !getProviderKey(req.userId!, "openai")) {
+      return reply.code(402).send({
+        error:
+          "This is an audio/video upload. Please enter your Whisper (OpenAI) API key to allow transcribing.",
+      });
     }
 
     // Options ride along as a multipart field named "options" (JSON).
